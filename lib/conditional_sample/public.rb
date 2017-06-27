@@ -37,11 +37,9 @@ module ConditionalSample
     #
     #    possible output => [1, 3, 4, 5, 2]
     #
-    # Will not work on arrays that contain nil values.
-    #
     def conditional_permutation conditions, seconds = nil
       timeout_rescue(seconds, []) do
-        conditional_permutation_recurse(self.to_a, conditions)
+        conditional_permutation_recurse(self.to_a, conditions).tap{ |i| i.pop }
       end
     end
 
@@ -65,11 +63,9 @@ module ConditionalSample
     #
     #    possible output => [1, 5, 3]
     #
-    # Will not work on arrays that contain nil values.
-    #
     def conditional_sample conditions, seconds = nil
       timeout_rescue(seconds, []) do
-        conditional_sample_recurse(self.to_a, conditions)
+        conditional_sample_recurse(self.to_a, conditions).tap{ |i| i.pop }
       end
     end
 

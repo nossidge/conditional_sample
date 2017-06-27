@@ -78,7 +78,7 @@ module ConditionalSample
           break if valid
         end
 
-        output.flatten.compact
+        output.flatten
       end
 
       ##
@@ -130,7 +130,7 @@ module ConditionalSample
           break if valid
         end
 
-        output.flatten.compact
+        output.flatten
       end
 
   end

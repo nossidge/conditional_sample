@@ -13,9 +13,9 @@ describe ConditionalSample, "basic behaviour" do
   let(:numbers) { (1..5).to_a }
   let(:conditions) {
     [
-      proc { |arr, elem| elem < 2},
-      proc { |arr, elem| elem > 4},
-      proc { |arr, elem| elem > 1}
+      proc { |arr, elem| elem.to_i < 2},
+      proc { |arr, elem| elem.to_i > 4},
+      proc { |arr, elem| elem.to_i > 1}
     ]
   }
   let(:output_sample) { [1, 5, 2] }
@@ -39,6 +39,22 @@ describe ConditionalSample, "basic behaviour" do
     expect(result.count).to be numbers.count
     expect(result[0]).to be 1
     expect(result[1]).to be 5
+  end
+
+  it "should correctly handle nil values" do
+    add_nil_values = numbers.dup
+
+    add_nil_values << nil
+    result = add_nil_values.shuffle.conditional_sample(conditions)
+    expect(result.count).to be conditions.count
+    result = add_nil_values.shuffle.conditional_permutation(conditions)
+    expect(result.count).to be add_nil_values.count
+
+    10.times { add_nil_values << nil }
+    result = add_nil_values.shuffle.conditional_sample(conditions)
+    expect(result.count).to be conditions.count
+    result = add_nil_values.shuffle.conditional_permutation(conditions)
+    expect(result.count).to be add_nil_values.count
   end
 end
 
