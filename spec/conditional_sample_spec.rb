@@ -43,19 +43,78 @@ describe ConditionalSample, "basic behaviour" do
 
   it "should correctly handle nil values" do
     add_nil_values = numbers.dup
-
-    add_nil_values << nil
-    result = add_nil_values.shuffle.conditional_sample(conditions)
-    expect(result.count).to be conditions.count
-    result = add_nil_values.shuffle.conditional_permutation(conditions)
-    expect(result.count).to be add_nil_values.count
-
-    10.times { add_nil_values << nil }
-    result = add_nil_values.shuffle.conditional_sample(conditions)
-    expect(result.count).to be conditions.count
-    result = add_nil_values.shuffle.conditional_permutation(conditions)
-    expect(result.count).to be add_nil_values.count
+    10.times do
+      add_nil_values << nil
+      result = add_nil_values.shuffle.conditional_sample(conditions)
+      expect(result.count).to be conditions.count
+      result = add_nil_values.shuffle.conditional_permutation(conditions)
+      expect(result.count).to be add_nil_values.count
+    end
   end
+
+  it "should correctly handle nil values" do
+    add_nil_values = numbers.dup
+    10.times do
+      add_nil_values << nil
+      result = add_nil_values.shuffle.conditional_sample(conditions)
+      expect(result.count).to be conditions.count
+      result = add_nil_values.shuffle.conditional_permutation(conditions)
+      expect(result.count).to be add_nil_values.count
+    end
+  end
+
+  it "conditional_permutation should correctly handle nil values" do
+    add_nil_values = numbers.dup
+    10.times do
+      add_nil_values << nil
+      result = add_nil_values.shuffle.conditional_sample(conditions)
+      expect(result.count).to be conditions.count
+      result = add_nil_values.shuffle.conditional_permutation(conditions)
+      expect(result.count).to be add_nil_values.count
+    end
+  end
+
+end
+
+################################################################################
+
+describe ConditionalSample, "when conditions.length > array.length" do
+
+  # Input values.
+  let(:array) { [1, 3, 4, "f", 5, 2, nil, 6] }
+  let(:possible) {
+    100.times.map do
+      proc { |arr, elem| true }
+    end
+  }
+  let(:impossible) {
+    100.times.map do
+      proc { |arr, elem| elem.to_i > 1 }
+    end
+  }
+
+  describe "conditional_sample" do
+    it "with procs that are possible, should output []" do
+      result = array.conditional_sample(possible)
+      expect(result).to eq []
+    end
+    it "with procs that are impossible, should output []" do
+      result = array.conditional_sample(impossible)
+      expect(result).to eq []
+    end
+  end
+
+  describe "conditional_permutation" do
+    it "with procs that are possible, should output the array" do
+      result = array.conditional_permutation(possible)
+      expect(result).to eq array
+    end
+    it "with procs that are impossible, should output []" do
+      result = array.conditional_permutation(impossible)
+      expect(result).to eq []
+    end
+  end
+
 end
 
 ################################################################################
@@ -107,6 +166,7 @@ describe ConditionalSample, "mixin behaviour" do
       struct.conditional_permutation(conditions)
     end.to raise_error NoMethodError
   end
+
 end
 
 ################################################################################
