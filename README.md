@@ -3,13 +3,13 @@
 by Paul Thompson - nossidge@gmail.com
 
 This is a Ruby gem that will patch the Array class with a couple of
-nice methods for sampling based on the results of an array of Boolean
-procs. Array is sampled using the procs as conditions that each specific
-array index element must conform to.
+nice methods for sampling based on the results of an array or hash of
+Boolean procs. Array is sampled using the procs as conditions that each
+specific array index element must conform to.
 
 I'm using this primarily for procedural generation, where I have an
-array of possible values and a certain sample I need, or order in which
-I want the values arranged.
+array of possible values and a certain sample I need to extract, or an
+order in which I want the values arranged.
 
 This code was spun off into a gem from my poetry generation project
 https://github.com/nossidge/poefy
@@ -57,10 +57,15 @@ elements from the input array are appended.
 
 This is an array of boolean procs that evaluate true if an element is
 allowed to be placed in that position.
+
 The arguments for each proc are |arr, elem|
 * **arr**  is a reference to the current array that has been built up
            through the recursion chain.
 * **elem** is a reference to the current element being considered.
+
+This can also be a hash. In that case, the key will correspond to
+the element in the output array. Non-Integer keys are ignored, and
+there is no implicit call to #to_i.
 
 
 ### The 'seconds' argument
@@ -141,6 +146,43 @@ shuf_permut = shuf.conditional_permutation(conditions)
 shuf_sample = shuf.conditional_sample(conditions)
 p shuf_permut  # => [2, 5, 4, 1, 3]
 p shuf_sample  # => [2, 5, 4]
+```
+
+
+### Condition hash example
+
+```ruby
+# 8 element input array.
+array = [1, 2, 3, 4, 'f', 5, nil, 6]
+
+# Conditions hash.
+# * [3] is the largest Integer key, so the resulting
+#   array will have four elements.
+# * Keys ['1'] and [nil] aren't Integers, so are ignored.
+# * Key [2] is given the default value of:
+#   proc { |arr, elem| true }
+conditions = {
+  1   => proc { |arr, elem| elem.to_i > 1 },
+  3   => proc { |arr, elem| elem.to_i > 5 },
+  0   => proc { |arr, elem| elem == 'f' },
+  '1' => proc { |arr, elem| false },
+  nil => proc { |arr, elem| false }
+}
+
+# These will always return the below output
+# because they are the first values that match.
+permut = array.conditional_permutation(conditions)
+sample = array.conditional_sample(conditions)
+p permut  # => ['f', 2, 1, 6, 3, 4, 5, nil]
+p sample  # => ['f', 2, 1, 6]
+
+# To get a random sample, #shuffle the array first.
+# These results will vary based on the shuffle.
+shuf = array.shuffle
+shuf_permut = shuf.conditional_permutation(conditions)
+shuf_sample = shuf.conditional_sample(conditions)
+p shuf_permut  # => ['f', 3, 5, 6, 2, 1, nil, 4]
+p shuf_sample  # => ['f', 3, 5, 6]
 ```
 
 

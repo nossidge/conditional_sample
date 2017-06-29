@@ -24,4 +24,17 @@ module ConditionalSample
     end
   end
 
+  ##
+  # Convert a hash to array, with key as index.
+  # Fill any missing elements with a default value.
+  #
+  def self.to_conditions_array input, default = nil
+    return input if input.is_a? Array
+
+    # Get a list of all Integer keys.
+    # Use the biggest key, and make an array of that length + 1.
+    keys = input.keys.select { |i| i.is_a? Integer }
+    keys.max.next.times.map  { |i| input[i] || default }
+  end
+
 end

@@ -39,6 +39,12 @@ module ConditionalSample
     #
     def conditional_permutation conditions, seconds = nil
       ConditionalSample::method_assert(self, 'to_a')
+
+      # Convert the conditions to an array.
+      conditions =
+        ConditionalSample::to_conditions_array(conditions, proc { true })
+
+      # Run the recursion, and rescue after a number of seconds.
       timeout_rescue(seconds, []) do
         conditional_permutation_recurse(self.to_a, conditions).tap{ |i| i.pop }
       end
@@ -71,6 +77,11 @@ module ConditionalSample
       # inputs, this just avoids running the complex recursion code.
       return [] if conditions.length > self.to_a.length
 
+      # Convert the conditions to an array.
+      conditions =
+        ConditionalSample::to_conditions_array(conditions, proc { true })
+
+      # Run the recursion, and rescue after a number of seconds.
       timeout_rescue(seconds, []) do
         conditional_sample_recurse(self.to_a, conditions).tap{ |i| i.pop }
       end

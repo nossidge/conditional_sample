@@ -40,6 +40,39 @@ describe ConditionalSample, "examples" do
 
   ##############################################################################
 
+  it "should output the correct results: Condition hash example" do
+
+    # 8 element input array.
+    array = [1, 2, 3, 4, 'f', 5, nil, 6]
+
+    # 4 element conditions hash.
+    conditions = {
+      1   => proc { |arr, elem| elem.to_i > 1 },
+      3   => proc { |arr, elem| elem.to_i > 5 },
+      0   => proc { |arr, elem| elem == 'f' },
+      '1' => proc { |arr, elem| false },
+      nil => proc { |arr, elem| false }
+    }
+
+    # These will always return the below output
+    # because they are the first values that match.
+    permut = array.conditional_permutation(conditions)
+    sample = array.conditional_sample(conditions)
+    expect(permut).to eq ['f', 2, 1, 6, 3, 4, 5, nil]
+    expect(sample).to eq ['f', 2, 1, 6]
+
+    # To get a random sample, #shuffle the array first.
+    # These results will vary based on the shuffle.
+    srand(37)
+    shuf = array.shuffle
+    shuf_permut = shuf.conditional_permutation(conditions)
+    shuf_sample = shuf.conditional_sample(conditions)
+    expect(shuf_permut).to eq ['f', 3, 5, 6, 2, 1, nil, 4]
+    expect(shuf_sample).to eq ['f', 3, 5, 6]
+  end
+
+  ##############################################################################
+
   it "should output the correct results: Random rhyming lines" do
 
     # Use this gem to get the rhyme of the line's final word.
