@@ -133,37 +133,46 @@ describe ConditionalSample, "mixin behaviour" do
   let(:output_sample) { [1, 5, 2] }
   let(:output_permutation) { [1, 5, 2, 3, 4] }
 
-  it "should correctly work with a Struct implementing #to_a" do
+  it "should correctly work with a Class implementing #to_a" do
 
-    # Attempt to mix in using extend on a Struct instance.
-    struct = Struct.new(:contents) do
-      def to_a
-        contents.to_a
+    # Class which includes MixMe and implements #to_a
+    class MixerWith
+      include ConditionalSample::MixMe
+      def initialize value
+        @value = value
       end
-    end.new numbers
-    struct.extend ConditionalSample::MixMe
+      def to_a
+        @value.to_a
+      end
+    end
+    mixer = MixerWith.new numbers
 
     # Run the methods, and compare results.
-    result = struct.conditional_sample(conditions)
+    result = mixer.conditional_sample(conditions)
     expect(result).to eq output_sample
 
-    result = struct.conditional_permutation(conditions)
+    result = mixer.conditional_permutation(conditions)
     expect(result).to eq output_permutation
   end
 
-  it "should fail on a Struct not implementing #to_a" do
+  it "should fail on a Class not implementing #to_a" do
 
-    # Attempt to mix in using extend on a Struct instance.
-    struct = Struct.new(:contents).new numbers
-    struct.extend ConditionalSample::MixMe
+    # Class which includes MixMe but doesn't implement #to_a
+    class MixerWithout
+      include ConditionalSample::MixMe
+      def initialize value
+        @value = value
+      end
+    end
+    mixer = MixerWithout.new numbers
 
     # Run the methods, and expect that they will fail.
     expect do
-      struct.conditional_sample(conditions)
+      mixer.conditional_sample(conditions)
     end.to raise_error NoMethodError
 
     expect do
-      struct.conditional_permutation(conditions)
+      mixer.conditional_permutation(conditions)
     end.to raise_error NoMethodError
   end
 
