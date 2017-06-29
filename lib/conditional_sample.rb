@@ -15,4 +15,13 @@ module ConditionalSample
   #
   Array.include ConditionalSample::MixMe
 
+  ##
+  # Raise an error if an object does not respond to a specific method.
+  #
+  def self.method_assert object, method_name
+    unless object.respond_to?(method_name)
+      raise NoMethodError, "Missing method ##{method_name}"
+    end
+  end
+
 end
