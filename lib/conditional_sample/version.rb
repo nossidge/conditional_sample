@@ -7,8 +7,8 @@ module ConditionalSample
   # The number of the current version.
   #
   def self.version_number
-    major = 0
-    minor = 1
+    major = 1
+    minor = 0
     tiny  = 0
     pre   = nil
 
@@ -19,6 +19,6 @@ module ConditionalSample
   # The date of the current version.
   #
   def self.version_date
-    '2017-06-27'
+    '2017-06-30'
   end
 end
